@@ -37,6 +37,8 @@
 			<div class="col-xs-12">
 				<p>
 					<h4>{l s='This module lets you to create products on PrestaShop uploading a csv file' mod='showweatherforecast'}</h4>
+					<p class="h4">{l s='Create you own API key on ' mod='showweatherforecast'} <a target="_blank" href="https://openweathermap.org/">openweathermap.org</a></p>
+					<p class="h4">{l s='This module uses the PrestaShop Geolocation by IP address. Be sure to activate the function to use the module' mod='showweatherforecast'}</p>
 				</p>				
 			</div>
 		</div>

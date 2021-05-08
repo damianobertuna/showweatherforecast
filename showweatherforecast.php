@@ -40,10 +40,6 @@ class Showweatherforecast extends Module
         $this->author = 'DAMIANO BERTUNA';
         $this->need_instance = 0;
         $this->_html = '';
-
-        /**
-         * Set $this->bootstrap to true if your module is compliant with bootstrap (PrestaShop 1.6)
-         */
         $this->bootstrap = true;
 
         parent::__construct();
@@ -54,25 +50,19 @@ class Showweatherforecast extends Module
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
     }
 
-    /**
-     * Don't forget to create update methods if needed:
-     * http://doc.prestashop.com/display/PS16/Enabling+the+Auto-Update
-     */
     public function install()
     {
         Configuration::updateValue('SHOWWEATHERFORECAST_API_KEY', false);
 
         return parent::install() &&
             $this->registerHook('header') &&
-            $this->registerHook('backOfficeHeader') &&
-            $this->registerHook('displayTop') &&
             $this->registerHook('displayNav1');
     }
+
 
     public function uninstall()
     {
         Configuration::deleteByName('SHOWWEATHERFORECAST_API_KEY');
-
         return parent::uninstall();
     }
 
@@ -81,9 +71,6 @@ class Showweatherforecast extends Module
      */
     public function getContent()
     {
-        /**
-         * If values have been submitted in the form, process.
-         */
         if (((bool)Tools::isSubmit('submitShowweatherforecastModule')) == true) {
             $this->postProcess();
         }
@@ -136,25 +123,6 @@ class Showweatherforecast extends Module
                 'icon' => 'icon-cogs',
                 ),
                 'input' => array(
-                    /*array(
-                        'type' => 'switch',
-                        'label' => $this->trans('Live mode'),
-                        'name' => 'SHOWWEATHERFORECAST_LIVE_MODE',
-                        'is_bool' => true,
-                        'desc' => $this->trans('Use this module in live mode'),
-                        'values' => array(
-                            array(
-                                'id' => 'active_on',
-                                'value' => true,
-                                'label' => $this->trans('Enabled')
-                            ),
-                            array(
-                                'id' => 'active_off',
-                                'value' => false,
-                                'label' => $this->trans('Disabled')
-                            )
-                        ),
-                    ),*/
                     array(
                         'col' => 3,
                         'type' => 'text',
@@ -163,11 +131,6 @@ class Showweatherforecast extends Module
                         'name' => 'SHOWWEATHERFORECAST_API_KEY',
                         'label' => $this->trans('API Key'),
                     ),
-                    /*array(
-                        'type' => 'password',
-                        'name' => 'SHOWWEATHERFORECAST_ACCOUNT_PASSWORD',
-                        'label' => $this->trans('Password'),
-                    ),*/
                 ),
                 'submit' => array(
                     'title' => $this->trans('Save'),
@@ -183,9 +146,7 @@ class Showweatherforecast extends Module
     protected function getConfigFormValues()
     {
         return array(
-            //'SHOWWEATHERFORECAST_LIVE_MODE' => Configuration::get('SHOWWEATHERFORECAST_LIVE_MODE', true),
             'SHOWWEATHERFORECAST_API_KEY' => Configuration::get('SHOWWEATHERFORECAST_API_KEY', ''),
-            //'SHOWWEATHERFORECAST_ACCOUNT_PASSWORD' => Configuration::get('SHOWWEATHERFORECAST_ACCOUNT_PASSWORD', null),
         );
     }
 
@@ -206,30 +167,15 @@ class Showweatherforecast extends Module
     }
 
     /**
-    * Add the CSS & JavaScript files you want to be loaded in the BO.
-    */
-    public function hookBackOfficeHeader()
-    {
-        if (Tools::getValue('module_name') == $this->name) {
-            $this->context->controller->addJS($this->_path.'views/js/back.js');
-            $this->context->controller->addCSS($this->_path.'views/css/back.css');
-        }
-    }
-
-    /**
      * Add the CSS & JavaScript files you want to be added on the FO.
      */
     public function hookHeader()
-    {
-        $this->context->controller->addJS($this->_path.'/views/js/front.js');
+    {        
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');
     }
 
     public function hookDisplayNav1()
     {
-
-        $this->context->controller->addCSS($this->_path.'views/css/front.css');
-
         $apiKey = Configuration::get('SHOWWEATHERFORECAST_API_KEY');
 
         if ($apiKey == "") {
@@ -243,7 +189,6 @@ class Showweatherforecast extends Module
         try {
             $record = $reader->city($geoLocationIp);
             if ($record->city->name == NULL) {
-                $record = $reader->city("2.237.118.139");
                 $error  = "City not found for this IP ".$geoLocationIp;
             }            
         } catch (\GeoIp2\Exception\AddressNotFoundException $e) {
@@ -280,8 +225,8 @@ class Showweatherforecast extends Module
 
     private function cUrl($url) {
 		$ch 				= curl_init();
-		// GET ALL PRODUCTS
-		curl_setopt($ch, CURLOPT_URL, $url);
+		
+        curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
 		curl_setopt($ch, CURLOPT_VERBOSE, 1);
@@ -303,48 +248,4 @@ class Showweatherforecast extends Module
 		curl_close($ch);
 		return $result_live;
 	}
-
-    /*{
-  "coord": {
-    "lon": 15.0872,
-    "lat": 37.5021
-  },
-  "weather": [
-    {
-      "id": 800,
-      "main": "Clear",
-      "description": "clear sky",
-      "icon": "01n"
-    }
-  ],
-  "base": "stations",
-  "main": {
-    "temp": 290.42,
-    "feels_like": 290.21,
-    "temp_min": 290.15,
-    "temp_max": 290.93,
-    "pressure": 1017,
-    "humidity": 77
-  },
-  "visibility": 10000,
-  "wind": {
-    "speed": 2.57,
-    "deg": 310
-  },
-  "clouds": {
-    "all": 0
-  },
-  "dt": 1620330947,
-  "sys": {
-    "type": 1,
-    "id": 6704,
-    "country": "IT",
-    "sunrise": 1620273534,
-    "sunset": 1620323614
-  },
-  "timezone": 7200,
-  "id": 2525068,
-  "name": "Catania",
-  "cod": 200
-}*/
 }
