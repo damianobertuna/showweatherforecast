@@ -182,6 +182,10 @@ class Showweatherforecast extends Module
             return false;
         }
 
+        if (!file_exists(_PS_GEOIP_DIR_ . _PS_GEOIP_CITY_FILE_)) {
+            return false;
+        }
+
         $geoLocationIp = Tools::getRemoteAddr();
         $reader = new GeoIp2\Database\Reader(_PS_GEOIP_DIR_ . _PS_GEOIP_CITY_FILE_);
         $error  = "";
